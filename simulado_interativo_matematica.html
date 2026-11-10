@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulado de Matemática – Ensino Médio</title>
+<style>
+:root{--ink:#172033;--muted:#667085;--brand:#3659c9;--brand2:#243f9f;--bg:#f3f5fb;--line:#e3e7f0;--good:#16834a;--bad:#c0392b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--ink);padding:22px 14px}
+.wrap{max-width:760px;margin:auto}
+header{background:linear-gradient(135deg,#253e9c,#5577e7);color:white;border-radius:20px;padding:28px 26px;margin-bottom:18px;box-shadow:0 10px 28px #263f9c22}
+.kicker{font-size:12px;letter-spacing:1.4px;text-transform:uppercase;opacity:.85;font-weight:bold}
+h1{font-size:clamp(25px,5vw,36px);margin:10px 0}
+header p{margin:0;line-height:1.5;opacity:.94}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.pill{background:#ffffff22;border:1px solid #ffffff55;border-radius:30px;padding:7px 11px;font-size:12px}
+.card{background:white;border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:0 5px 18px #1720330a}
+h2{font-size:20px;margin:0 0 8px}
+.small{color:var(--muted);font-size:14px;line-height:1.5}
+label.field{display:block;font-size:14px;font-weight:bold;margin:18px 0 7px}
+input[type=text]{width:100%;padding:13px 14px;border:1px solid #cfd5e2;border-radius:10px;font-size:16px}
+button{border:0;border-radius:11px;padding:13px 18px;font-size:15px;font-weight:bold;cursor:pointer}
+.primary{background:var(--brand);color:white}
+.primary:hover{background:var(--brand2)}
+.secondary{background:#edf0fa;color:#24345f}
+button:disabled{opacity:.45;cursor:not-allowed}
+.actions{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
+.progressrow{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;color:var(--muted);font-size:13px}
+.track{height:8px;background:#e9edf6;border-radius:20px;overflow:hidden;margin-bottom:22px}
+.bar{height:100%;width:0;background:var(--brand);transition:width .25s}
+.question{font-size:18px;line-height:1.55;font-weight:bold;margin:0 0 18px}
+.option{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);padding:13px 14px;border-radius:12px;margin:10px 0;cursor:pointer;line-height:1.4}
+.option:hover{border-color:#8ea2ed;background:#f8f9ff}
+.option input{margin-top:3px;accent-color:var(--brand);transform:scale(1.15)}
+.option.selected{border-color:var(--brand);background:#f2f5ff}
+.hint{margin-top:16px}
+.hint summary{color:var(--brand);cursor:pointer;font-weight:bold;font-size:14px}
+.hint p{font-size:14px;color:var(--muted);line-height:1.5}
+.feedback{padding:14px;border-radius:12px;margin-top:16px;font-size:14px;line-height:1.5}
+.feedback.good{background:#eaf7ef;color:#145c37;border:1px solid #b9e4c9}
+.feedback.bad{background:#fff0ee;color:#84251d;border:1px solid #f0c2bc}
+.result{text-align:center}
+.score{font-size:54px;font-weight:800;color:var(--brand);margin:12px 0}
+.review{text-align:left;border-top:1px solid var(--line);padding:14px 0}
+.review strong{display:block;margin-bottom:6px}
+.hidden{display:none!important}
+footer{text-align:center;color:var(--muted);font-size:12px;margin:18px 0}
+@media(max-width:520px){body{padding:12px 9px}.card{padding:18px}.actions button{flex:1}.question{font-size:17px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="kicker">Atividade avaliativa • Matemática</div>
+  <h1>Desafio de Matemática</h1>
+  <p>Simulado para o Ensino Médio. Leia cada questão com atenção, selecione sua resposta e confira o feedback ao finalizar cada questão.</p>
+  <div class="pills"><span class="pill">10 questões</span><span class="pill">Ensino Médio</span><span class="pill">Correção automática</span></div>
+</header>
+
+<section id="ident" class="card">
+  <h2>Identificação do estudante</h2>
+  <p class="small">Preencha seus dados antes de começar. Suas respostas e sua nota serão exibidas ao final.</p>
+  <label class="field" for="student">Nome completo</label>
+  <input id="student" type="text" autocomplete="name" placeholder="Digite seu nome completo">
+  <label class="field" for="classroom">Turma</label>
+  <input id="classroom" type="text" placeholder="Ex.: 1ª série A">
+  <div class="actions"><span></span><button class="primary" id="start">Começar simulado</button></div>
+  <p class="small" id="warning" style="color:#b42318" aria-live="polite"></p>
+</section>
+
+<section id="quiz" class="card hidden">
+  <div class="progressrow"><span id="counter">Questão 1 de 10</span><span id="answered">0 respondidas</span></div>
+  <div class="track"><div class="bar" id="bar"></div></div>
+  <div class="small" id="typeNote"></div>
+  <p class="question" id="question"></p>
+  <div id="options"></div>
+  <details class="hint"><summary>Preciso de uma dica</summary><p id="hint"></p></details>
+  <div id="feedback" class="feedback hidden" aria-live="polite"></div>
+  <div class="actions">
+    <button class="secondary" id="back">Voltar</button>
+    <button class="primary" id="check">Corrigir resposta</button>
+    <button class="primary hidden" id="next">Próxima questão</button>
+  </div>
+</section>
+
+<section id="result" class="card hidden">
+  <div class="result">
+    <div class="kicker" style="color:var(--brand)">Simulado concluído</div>
+    <h2 id="resultTitle">Resultado</h2>
+    <div class="score" id="score">0/10</div>
+    <p id="summary" class="small"></p>
+    <button class="primary" id="print">Imprimir / salvar resultado em PDF</button>
+    <button class="secondary" id="restart" style="margin-left:6px">Refazer simulado</button>
+  </div>
+  <div id="details" style="margin-top:25px"></div>
+  <p class="small">Observação: esta versão funciona no navegador e calcula a nota no próprio dispositivo. Ela não envia automaticamente as respostas ao professor.</p>
+</section>
+<footer>Simulado de Matemática • Atividade digital</footer>
+</div>
+
+<script>
+const questions = [
+{type:"single",q:"Uma escola possui 240 estudantes. Desse total, 3/5 participam de atividades esportivas. Quantos estudantes participam dessas atividades?",opts:["120 estudantes","144 estudantes","160 estudantes","180 estudantes"],correct:[1],hint:"Divida o total pelo denominador da fração e multiplique pelo numerador.",feedback:["120 corresponde à metade de 240, mas a fração indicada é maior.","3/5 de 240 = 240 ÷ 5 × 3 = 144 estudantes.","160 corresponde a 2/3 de 240, não a 3/5.","180 corresponde a 3/4 de 240, não a 3/5."]},
+{type:"single",q:"Uma loja vende uma mochila por R$ 200,00. Durante uma promoção, oferece desconto de 15%. Qual será o preço final da mochila?",opts:["R$ 160,00","R$ 165,00","R$ 170,00","R$ 185,00"],correct:[2],hint:"Calcule primeiro o valor correspondente a 15% do preço original.",feedback:["Esse valor representa um desconto de 20%, e não de 15%.","O desconto é de R$ 30,00; subtraindo de R$ 200,00, o resultado é R$ 170,00.","15% de 200 = R$ 30,00; portanto, 200 − 30 = R$ 170,00.","Esse valor representa um desconto de apenas R$ 15,00, equivalente a 7,5%."]},
+{type:"single",q:"Um serviço de transporte cobra uma taxa fixa de R$ 8,00 mais R$ 3,00 por quilômetro percorrido. Qual função representa o preço P, em reais, para uma viagem de x quilômetros?",opts:["P(x) = 8x + 3","P(x) = 3x + 8","P(x) = 3x − 8","P(x) = 11x"],correct:[1],hint:"Separe o valor que não depende da distância daquele que varia com os quilômetros.",feedback:["Essa função inverte a taxa fixa e o valor por quilômetro.","O coeficiente 3 representa o valor por quilômetro e 8 representa a taxa fixa.","A taxa fixa deve ser adicionada, não subtraída.","Essa expressão não representa corretamente uma taxa fixa mais o valor variável."]},
+{type:"tf",q:"A função f(x) = 2x + 5 é crescente, pois seu coeficiente angular é positivo.",opts:["Verdadeiro","Falso"],correct:[0],hint:"Observe como o sinal do coeficiente angular influencia a inclinação da reta.",feedback:["Um coeficiente angular positivo indica que os valores da função aumentam quando x aumenta.","A afirmação é verdadeira: como o coeficiente angular é 2, a função é crescente."]},
+{type:"single",q:"Uma praça retangular possui 12 metros de comprimento e 8 metros de largura. Será instalado piso em toda a sua superfície. Qual é a área que receberá o piso?",opts:["40 m²","48 m²","96 m²","120 m²"],correct:[2],hint:"Para encontrar a superfície de um retângulo, multiplique as duas dimensões.",feedback:["40 m é o perímetro do retângulo, não sua área.","Esse valor não corresponde ao produto das dimensões informadas.","A área do retângulo é 12 × 8 = 96 m².","Esse resultado não corresponde ao produto das dimensões informadas."]},
+{type:"single",q:"Uma população de determinada espécie de aves era de 800 indivíduos em 2020. Em 2025, passou a ser de 1.200 indivíduos. Qual foi o aumento percentual em relação à população inicial?",opts:["25%","40%","50%","60%"],correct:[2],hint:"Compare a diferença entre os valores com a quantidade inicial.",feedback:["O aumento de 400 representa 50% de 800, não 25%.","40% de 800 corresponde a 320, não ao aumento observado de 400.","O aumento foi de 400 indivíduos; 400 ÷ 800 × 100 = 50%.","60% de 800 corresponde a 480 indivíduos."]},
+{type:"single",q:"Uma reta passa pelos pontos (0, 4) e (2, 10). Considerando a equação y = ax + b, qual é sua lei de formação?",opts:["y = 2x + 4","y = 3x + 4","y = 3x + 2","y = 4x + 3"],correct:[1],hint:"O ponto com x igual a zero ajuda a identificar o termo independente. Depois, verifique a variação de y.",feedback:["Para x = 2, essa expressão resulta em 8, não 10.","Para x = 0, y = 4; para x = 2, y = 10. A expressão atende aos dois pontos.","Para x = 0, o resultado seria 2, mas o ponto informado tem y = 4.","Para x = 0, o resultado seria 3, diferente do valor 4."]},
+{type:"multi",q:"Uma receita utiliza 2 xícaras de farinha para preparar 12 bolinhos. Mantendo a mesma proporção, selecione todas as afirmações corretas para preparar 36 bolinhos.",opts:["Serão necessárias 6 xícaras de farinha.","A quantidade de farinha será multiplicada por 3.","Serão necessárias 4 xícaras de farinha.","A quantidade de farinha será dividida por 3."],correct:[0,1],hint:"Compare quantas vezes a quantidade de bolinhos aumentou e aplique o mesmo fator à farinha.",feedback:["36 é três vezes 12; portanto, 2 × 3 = 6 xícaras.","A quantidade de bolinhos triplicou, então a farinha também deve triplicar.","4 xícaras correspondem ao dobro da receita original, suficiente para 24 bolinhos.","A quantidade de farinha deve aumentar na mesma proporção que a quantidade de bolinhos."]},
+{type:"tf",q:"Se duas grandezas são diretamente proporcionais, quando uma delas dobra, a outra também dobra, mantendo-se constante a razão entre elas.",opts:["Verdadeiro","Falso"],correct:[0],hint:"Pense no que acontece com o preço total quando a quantidade comprada dobra e o preço unitário não muda.",feedback:["Na proporcionalidade direta, as grandezas variam pelo mesmo fator e sua razão permanece constante.","A afirmação é verdadeira: dobrar uma grandeza também dobra a outra na proporcionalidade direta."]},
+{type:"single",q:"Uma empresa registrou a produção de uma fábrica: em 2022, foram produzidas 500 peças; em 2023, 650 peças; em 2024, 800 peças. Mantendo esse crescimento anual, quantas peças serão produzidas em 2026?",opts:["950 peças","1.000 peças","1.100 peças","1.200 peças"],correct:[2],hint:"Descubra primeiro o aumento entre anos consecutivos e projete esse crescimento por mais dois anos.",feedback:["950 corresponde à projeção para 2025, considerando o aumento anual de 150 peças.","Esse valor não considera dois aumentos anuais completos de 150 peças a partir de 2024.","De 2024 a 2026 são dois anos: 800 + 150 + 150 = 1.100 peças.","Esse resultado considera um crescimento maior do que 150 peças por ano."]}
+];
+let current=0, answers=Array(questions.length).fill(null), checked=Array(questions.length).fill(false), student="", classroom="";
+const $=id=>document.getElementById(id);
+$("start").onclick=()=>{student=$("student").value.trim();classroom=$("classroom").value.trim();if(!student||!classroom){$("warning").textContent="Preencha seu nome e sua turma para começar.";return;}$("ident").classList.add("hidden");$("quiz").classList.remove("hidden");render();};
+function render(){
+ const item=questions[current];$("counter").textContent=`Questão ${current+1} de ${questions.length}`;$("answered").textContent=`${answers.filter(a=>a!==null).length} respondidas`;$("bar").style.width=`${(current/questions.length)*100}%`;
+ $("typeNote").textContent=item.type==="multi"?"Selecione todas as alternativas corretas.":item.type==="tf"?"Marque verdadeiro ou falso.":"Selecione uma alternativa.";
+ $("question").textContent=item.q;$("hint").textContent=item.hint;$("feedback").className="feedback hidden";$("feedback").textContent="";
+ $("options").innerHTML="";item.opts.forEach((label,i)=>{const row=document.createElement("label");row.className="option";const inp=document.createElement("input");inp.type=item.type==="multi"?"checkbox":"radio";inp.name="answer";inp.value=i;inp.checked=answers[current]!==null&&(item.type==="multi"?answers[current].includes(i):answers[current]===i);inp.disabled=checked[current];const span=document.createElement("span");span.textContent=label;row.append(inp,span);if(inp.checked)row.classList.add("selected");inp.addEventListener("change",()=>{if(item.type==="multi"){const selected=[...document.querySelectorAll('input[name="answer"]:checked')].map(x=>Number(x.value));answers[current]=selected.length?selected:null;}else answers[current]=i;document.querySelectorAll(".option").forEach(x=>x.classList.remove("selected"));if(item.type==="multi"){document.querySelectorAll('input[name="answer"]:checked').forEach(x=>x.closest(".option").classList.add("selected"));}else row.classList.add("selected");});$("options").append(row);});
+ $("back").disabled=current===0;$("check").classList.toggle("hidden",checked[current]);$("next").classList.toggle("hidden",!checked[current]);$("next").textContent=current===questions.length-1?"Ver resultado":"Próxima questão";
+ if(checked[current])showFeedback();
+}
+function isCorrect(i){const a=answers[i],c=questions[i].correct;if(a===null)return false;const aa=Array.isArray(a)?[...a].sort():[a],cc=[...c].sort();return aa.length===cc.length&&aa.every((v,j)=>v===cc[j]);}
+function showFeedback(){const item=questions[current],box=$("feedback"),ok=isCorrect(current);box.className="feedback "+(ok?"good":"bad");let text=ok?"Resposta correta! ":"Resposta incorreta. ";if(answers[current]===null)text="Você não selecionou uma resposta. ";if(item.type==="multi"){text+=item.opts.map((o,i)=>`${o} ${item.feedback[i]}`).join(" ");}else{const selected=answers[current];text+=selected===null?"":item.feedback[selected];if(selected!==item.correct[0])text+=" Resposta esperada: "+item.correct.map(i=>item.opts[i]).join(", ")+". ";}box.textContent=text;}
+$("check").onclick=()=>{if(answers[current]===null){$("feedback").className="feedback bad";$("feedback").textContent="Selecione uma resposta antes de corrigir.";return;}checked[current]=true;render();};
+$("back").onclick=()=>{if(current>0){current--;render();}};
+$("next").onclick=()=>{if(current<questions.length-1){current++;render();}else finish();};
+function finish(){const score=answers.reduce((n,a,i)=>n+(isCorrect(i)?1:0),0);$("quiz").classList.add("hidden");$("result").classList.remove("hidden");$("resultTitle").textContent=`${student} • ${classroom}`;$("score").textContent=`${score}/10`;$("summary").textContent=`Você acertou ${score} de 10 questões. Sua nota é ${score.toFixed(1).replace(".",",")} de 10.`;$("bar").style.width="100%";$("details").innerHTML="<h2>Revisão das respostas</h2>"+questions.map((q,i)=>`<div class="review"><strong>Questão ${i+1} — ${isCorrect(i)?"Acertou":"Não acertou"}</strong><div class="small">${q.q}</div><div class="small"><b>Resposta correta:</b> ${q.correct.map(x=>q.opts[x]).join("; ")}</div></div>`).join("");}
+$("print").onclick=()=>window.print();
+$("restart").onclick=()=>{current=0;answers=Array(questions.length).fill(null);checked=Array(questions.length).fill(false);$("result").classList.add("hidden");$("ident").classList.remove("hidden");$("student").value=student;$("classroom").value=classroom;$("warning").textContent="";};
+</script>
+</body>
+</html>
